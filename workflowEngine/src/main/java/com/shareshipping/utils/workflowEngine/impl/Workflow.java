@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +30,7 @@ import com.shareshipping.utils.workflowEngine.exceptions.InvalidWorkflowStructur
 
 public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkflow<T, C> {
 
-	private final ExecutorService stageExecutors;
+	private final ExecutorService workflowExecutorService;
 	private Collection<Class<? extends Stage<T, C>>> workflowNodes;
 	private final HashMap<String, IWorkflowStage<T, C>> idToInstanceNode;
 	private final HashMap<String, Map<Integer, String>> idToNextNodeId;
@@ -47,7 +47,7 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		this.injector = injector;
 		this.idToInstanceNode = Maps.newHashMap();
 		this.idToNextNodeId = Maps.newHashMap();
-		this.stageExecutors = Executors.newCachedThreadPool();
+		this.workflowExecutorService = Executors.newCachedThreadPool();
 	};
 
 	protected abstract Collection<Class<? extends Stage<T, C>>> nodes();
@@ -74,9 +74,14 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 	}
 
 	@Override
-	public Future<T> executeAsync() {
-		// TODO Auto-generated method stub
-		return null;
+	public CompletableFuture<T> executeAsync() {
+
+		T returnVal = injector.getInstance(withReturnType());
+		C context = injector.getInstance(withContext());
+
+		return CompletableFuture.supplyAsync(new WorkflowExecutor<T, C>(idToInstanceNode, idToNextNodeId, startNodeId,
+				endNodeId, returnVal, context));
+
 	}
 
 	@Override
@@ -86,10 +91,13 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		C context = injector.getInstance(withContext());
 
 		try {
-			return stageExecutors.submit(new WorkflowExecutor<T, C>(idToInstanceNode, idToNextNodeId, startNodeId,
-					endNodeId, returnVal, context)).get();
+
+			T x = workflowExecutorService.submit(new WorkflowExecutor<T, C>(idToInstanceNode, idToNextNodeId,
+					startNodeId, endNodeId, returnVal, context)).get();
+
+			return x;
+
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
 			return null;
 		}
 

@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface Gateway {
 
-	String workflow();
-
 	String id();
 
 	String flow1();

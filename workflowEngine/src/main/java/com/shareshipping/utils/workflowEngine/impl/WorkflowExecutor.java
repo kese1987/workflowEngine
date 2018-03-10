@@ -3,6 +3,7 @@ package com.shareshipping.utils.workflowEngine.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,7 +11,7 @@ import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 import com.shareshipping.utils.workflowEngine.IWorkflowStage;
 
-public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable<T> {
+public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable<T>, Supplier<T> {
 
 	private final T returnType;
 	private final C context;
@@ -33,8 +34,7 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 		this.context = context;
 	}
 
-	@Override
-	public T call() {
+	private void runWorkflow() {
 
 		String currentNode = startNodeId;
 		while (StringUtils.isNotBlank(currentNode)) {
@@ -58,9 +58,18 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 				}
 			}
 		}
+	}
 
+	@Override
+	public T call() {
+		runWorkflow();
 		return returnType;
+	}
 
+	@Override
+	public T get() {
+		runWorkflow();
+		return returnType;
 	}
 
 }

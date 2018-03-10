@@ -9,8 +9,11 @@ import com.shareshipping.utils.workflowEngine.impl.Stage;
 import com.shareshipping.utils.workflowEngine.impl.Workflow;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowEndNode;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowStartNode;
+import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowTask1Node;
+import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowTask2Node;
+import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowUserAlreadyLoggedIn;
 
-public class LoginWorkflow extends Workflow<String, LoginContext> {
+public class LoginWorkflow extends Workflow<LoginResult, LoginContext> {
 
 	@Inject
 	public LoginWorkflow(Injector injector) {
@@ -18,8 +21,8 @@ public class LoginWorkflow extends Workflow<String, LoginContext> {
 	}
 
 	@Override
-	public Class<String> withReturnType() {
-		return String.class;
+	public Class<LoginResult> withReturnType() {
+		return LoginResult.class;
 	}
 
 	@Override
@@ -28,8 +31,12 @@ public class LoginWorkflow extends Workflow<String, LoginContext> {
 	}
 
 	@Override
-	protected List<Class<? extends Stage<String, LoginContext>>> nodes() {
-		return Arrays.asList(LoginWorkflowStartNode.class, LoginWorkflowEndNode.class);
+	protected List<Class<? extends Stage<LoginResult, LoginContext>>> nodes() {
+		return Arrays.asList(LoginWorkflowStartNode.class, 
+							LoginWorkflowEndNode.class, 
+							LoginWorkflowTask1Node.class,
+							LoginWorkflowTask2Node.class, 
+							LoginWorkflowUserAlreadyLoggedIn.class);
 	}
 
 }
