@@ -4,16 +4,18 @@ import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 import com.shareshipping.utils.workflowEngine.IWorkflowStage;
 
-public abstract class Stage<T, C extends IWorkflowContext> implements IWorkflowStage {
+public abstract class Stage<T, C extends IWorkflowContext> implements IWorkflowStage<T, C> {
 
 	private ICompletationToken token;
 	protected T returnObject;
 	protected C context;
 
+	@Override
 	public void setReturnValue(T returnValue) {
 		this.returnObject = returnValue;
 	}
 
+	@Override
 	public void setContext(C context) {
 		this.context = context;
 	}

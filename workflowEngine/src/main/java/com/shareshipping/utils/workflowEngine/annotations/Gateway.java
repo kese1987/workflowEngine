@@ -8,8 +8,19 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface AErrorHandler {
-	Class<?> exceptionClass();
+public @interface Gateway {
 
-	String to();
+	String workflow();
+
+	String id();
+
+	String flow1();
+
+	String flow2() default "";
+
+	String flow3() default "";
+
+	String flow4() default "";
+
+	String flow5() default "";
 }

@@ -3,6 +3,7 @@ package com.shareshipping.utils.workflowEngine;
 import javax.annotation.PostConstruct;
 
 import com.google.inject.Inject;
+import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginWorkflow;
 
 public class Application {
 

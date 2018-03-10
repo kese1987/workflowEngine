@@ -8,10 +8,12 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface AStartElement {
+public @interface BooleanGateway {
 	String workflow();
 
 	String id();
 
-	String to();
+	String yesFlow();
+
+	String noFlow();
 }

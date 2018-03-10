@@ -1,4 +1,4 @@
-package com.shareshipping.utils.workflowEngine;
+package com.shareshipping.utils.workflowEngine.loginWorkflow;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,13 +7,14 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.shareshipping.utils.workflowEngine.impl.Stage;
 import com.shareshipping.utils.workflowEngine.impl.Workflow;
-import com.shareshipping.utils.workflowEngine.impl.WorkflowScope;
+import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowEndNode;
+import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowStartNode;
 
 public class LoginWorkflow extends Workflow<String, LoginContext> {
 
 	@Inject
-	public LoginWorkflow(Injector injector, WorkflowScope scope) {
-		super(injector, scope);
+	public LoginWorkflow(Injector injector) {
+		super(injector);
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class LoginWorkflow extends Workflow<String, LoginContext> {
 
 	@Override
 	protected List<Class<? extends Stage<String, LoginContext>>> nodes() {
-		return Arrays.asList(s.class, ss.class);
+		return Arrays.asList(LoginWorkflowStartNode.class, LoginWorkflowEndNode.class);
 	}
 
 }

@@ -1,4 +1,6 @@
-package com.shareshipping.utils.workflowEngine;
+package com.shareshipping.utils.workflowEngine.loginWorkflow;
+
+import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 
 public class LoginContext implements IWorkflowContext {
 

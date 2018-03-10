@@ -8,10 +8,8 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface AUserTaskElement {
-	String workflow();
+public @interface ErrorHandler {
+	Class<?> exceptionClass();
 
 	String id();
-
-	String to();
 }
