@@ -1,6 +1,5 @@
 package com.shareshipping.utils.workflowEngine.impl;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -18,30 +17,28 @@ import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IWorkflow;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 
-public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkflow<T> {
+public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkflow<T, C> {
 
 	private final ExecutorService stageExecutors;
-	private final Collection<Class<? extends Stage<T, C>>> nodes;
+	private Collection<Class<? extends Stage<T, C>>> workflowNodes;
 	private final ConcurrentMap<Object, Object> nodeByIdMap;
 
-	@Inject
-	@Named("WorkflowScope")
-	WorkflowScope scope;
+	private final Injector injector;
+	private final WorkflowScope scope;
 
 	@Inject
-	Injector injector;
-
-	@SuppressWarnings("unchecked")
-	public Workflow(Class<? extends Stage<T, C>>... nodes) {
-		this.nodes = Arrays.asList(nodes);
+	public Workflow(Injector injector, @Named("WorkflowScope") WorkflowScope scope) {
+		this.injector = injector;
+		this.scope = scope;
 		this.nodeByIdMap = Maps.newConcurrentMap();
 		this.stageExecutors = Executors.newCachedThreadPool();
-
 	};
+
+	protected abstract Collection<Class<? extends Stage<T, C>>> nodes();
 
 	@PostConstruct
 	public void configureModule() {
-		System.out.println("post Workflow");
+		workflowNodes = nodes();
 	}
 
 	@Override
@@ -54,10 +51,9 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 	public T execute() {
 		try {
 			T returnVal = withReturnType().newInstance();
-			C context = (C) withContext().newInstance();
+			C context = withContext().newInstance();
 
-			// scope.enter();
-			for (Class<? extends Stage<T, C>> step : nodes) {
+			for (Class<? extends Stage<T, C>> step : workflowNodes) {
 
 				Stage<T, C> task = injector.getInstance(step);
 				task.setReturnValue(returnVal);
@@ -70,7 +66,6 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 					e.printStackTrace();
 				}
 			}
-			// scope.exit();
 			return returnVal;
 		} catch (InstantiationException | IllegalAccessException e1) {
 			// TODO Auto-generated catch block

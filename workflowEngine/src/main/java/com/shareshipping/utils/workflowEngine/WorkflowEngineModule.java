@@ -1,22 +1,53 @@
 package com.shareshipping.utils.workflowEngine;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.reflect.MethodUtils;
+
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
-import com.shareshipping.utils.workflowEngine.annotations.AWorkflowScope;
-import com.shareshipping.utils.workflowEngine.impl.WorkflowScope;
+import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.spi.InjectionListener;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
+import com.shareshipping.utils.workflowEngine.impl.WorkflowFactory;
 
 public class WorkflowEngineModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 
-		WorkflowScope wfScope = new WorkflowScope();
+		bind(IWorkflowFactory.class).to(WorkflowFactory.class).in(Scopes.SINGLETON);
 
-		// tell Guice about the scope
-		bindScope(AWorkflowScope.class, wfScope);
+		bindListener(Matchers.any(), new TypeListener() {
+			@Override
+			public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
+				encounter.register(new InjectionListener<I>() {
+					@Override
+					public void afterInjection(I injectee) {
 
-		// make our scope instance injectable
-		bind(WorkflowScope.class).annotatedWith(Names.named("WorkflowScope")).toInstance(wfScope);
+						Method[] methods = MethodUtils.getMethodsWithAnnotation(injectee.getClass(),
+								PostConstruct.class, true, true);
+						for (Method m : methods) {
+							m.setAccessible(true);
+
+							try {
+								m.invoke(injectee);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
+					}
+				});
+			}
+		});
+
 	}
 
 }

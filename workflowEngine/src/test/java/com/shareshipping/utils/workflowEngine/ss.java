@@ -1,10 +1,9 @@
 package com.shareshipping.utils.workflowEngine;
 
 import com.google.inject.Inject;
-import com.shareshipping.utils.workflowEngine.impl.EmptyContext;
 import com.shareshipping.utils.workflowEngine.impl.Stage;
 
-public class ss extends Stage<String, EmptyContext> {
+public class ss extends Stage<String, LoginContext> {
 
 	private IEnrico enrico;
 
@@ -15,7 +14,7 @@ public class ss extends Stage<String, EmptyContext> {
 
 	@Override
 	public void process(ICompletationToken token) {
-		System.out.println("ss");
+		System.out.println("ss:" + context.getQuanti());
 
 		enrico.doEnrico();
 	}

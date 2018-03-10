@@ -1,26 +1,34 @@
 package com.shareshipping.utils.workflowEngine;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.shareshipping.utils.workflowEngine.impl.EmptyContext;
+import com.shareshipping.utils.workflowEngine.impl.Stage;
 import com.shareshipping.utils.workflowEngine.impl.Workflow;
+import com.shareshipping.utils.workflowEngine.impl.WorkflowScope;
 
-public class LoginWorkflow extends Workflow<String, EmptyContext> {
+public class LoginWorkflow extends Workflow<String, LoginContext> {
 
-	@SuppressWarnings("unchecked")
 	@Inject
-	public LoginWorkflow(Injector injector) {
-		super(s.class, ss.class);
+	public LoginWorkflow(Injector injector, WorkflowScope scope) {
+		super(injector, scope);
 	}
 
 	@Override
-	public Class<? extends String> withReturnType() {
+	public Class<String> withReturnType() {
 		return String.class;
 	}
 
 	@Override
-	public Class<? extends IWorkflowContext> withContext() {
-		return EmptyContext.class;
+	public Class<LoginContext> withContext() {
+		return LoginContext.class;
+	}
+
+	@Override
+	protected List<Class<? extends Stage<String, LoginContext>>> nodes() {
+		return Arrays.asList(s.class, ss.class);
 	}
 
 }

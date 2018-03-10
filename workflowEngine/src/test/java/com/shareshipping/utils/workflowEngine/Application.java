@@ -14,8 +14,8 @@ public class Application {
 	}
 
 	@Inject
-	public Application(LoginWorkflow loginWf) {
-		this.loginWf = loginWf;
+	public Application(IWorkflowFactory wfFcatory) {
+		loginWf = (LoginWorkflow) wfFcatory.create(LoginWorkflow.class);
 
 	}
 
