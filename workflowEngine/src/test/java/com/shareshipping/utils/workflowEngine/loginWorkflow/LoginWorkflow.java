@@ -31,12 +31,9 @@ public class LoginWorkflow extends Workflow<LoginResult, LoginContext> {
 	}
 
 	@Override
-	protected List<Class<? extends Stage<LoginResult, LoginContext>>> nodes() {
-		return Arrays.asList(LoginWorkflowStartNode.class, 
-							LoginWorkflowEndNode.class, 
-							LoginWorkflowTask1Node.class,
-							LoginWorkflowTask2Node.class, 
-							LoginWorkflowUserAlreadyLoggedIn.class);
+	public static List<Class<? extends Stage<LoginResult, LoginContext>>> nodes() {
+		return Arrays.asList(LoginWorkflowStartNode.class, LoginWorkflowEndNode.class, LoginWorkflowTask1Node.class,
+				LoginWorkflowTask2Node.class, LoginWorkflowUserAlreadyLoggedIn.class);
 	}
 
 }

@@ -14,6 +14,8 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
+import com.shareshipping.utils.workflowEngine.graphml.IGrapher;
+import com.shareshipping.utils.workflowEngine.graphml.impl.Grapher;
 import com.shareshipping.utils.workflowEngine.impl.WorkflowFactory;
 
 public class WorkflowEngineModule extends AbstractModule {
@@ -22,6 +24,8 @@ public class WorkflowEngineModule extends AbstractModule {
 	protected void configure() {
 
 		bind(IWorkflowFactory.class).to(WorkflowFactory.class).in(Scopes.SINGLETON);
+
+		bind(IGrapher.class).to(Grapher.class).in(Scopes.SINGLETON);
 
 		bindListener(Matchers.any(), new TypeListener() {
 			@Override

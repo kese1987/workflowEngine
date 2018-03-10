@@ -3,6 +3,7 @@ package com.shareshipping.utils.workflowEngine;
 import javax.annotation.PostConstruct;
 
 import com.google.inject.Inject;
+import com.shareshipping.utils.workflowEngine.graphml.IGrapher;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginResult;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginWorkflow;
 
@@ -16,7 +17,10 @@ public class Application {
 	}
 
 	@Inject
-	public Application(IWorkflowFactory wfFcatory) {
+	public Application(IWorkflowFactory wfFcatory, IGrapher grapher) {
+
+		grapher.draw(LoginWorkflow.class, "testgrapher.gml");
+
 		loginWf = (LoginWorkflow) wfFcatory.create(LoginWorkflow.class);
 
 	}
