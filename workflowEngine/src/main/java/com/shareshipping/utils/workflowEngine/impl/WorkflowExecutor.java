@@ -14,15 +14,16 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 
 	private final T returnType;
 	private final C context;
-	private final HashMap<String, IWorkflowStage> nodes;
+	private final HashMap<String, IWorkflowStage<T, C>> nodes;
 	private final String startNodeId;
 	private final String endNodeId;
 
 	private String currentNodeId;
 	private HashMap<String, Map<Integer, String>> idToNextNodeId;
 
-	public WorkflowExecutor(HashMap<String, IWorkflowStage> nodes, HashMap<String, Map<Integer, String>> idToNextNodeId,
-			String startNode, String endNode, T returnType, C context) {
+	public WorkflowExecutor(HashMap<String, IWorkflowStage<T, C>> nodes,
+			HashMap<String, Map<Integer, String>> idToNextNodeId, String startNode, String endNode, T returnType,
+			C context) {
 
 		this.nodes = nodes;
 		this.idToNextNodeId = idToNextNodeId;
@@ -38,7 +39,7 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 		String currentNode = startNodeId;
 		while (StringUtils.isNotBlank(currentNode)) {
 
-			IWorkflowStage instance = nodes.get(currentNode);
+			IWorkflowStage<T, C> instance = nodes.get(currentNode);
 			ICompletationToken token = new CompletationToken();
 
 			instance.setContext(context);

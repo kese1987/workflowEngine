@@ -32,7 +32,7 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 
 	private final ExecutorService stageExecutors;
 	private Collection<Class<? extends Stage<T, C>>> workflowNodes;
-	private final HashMap<String, IWorkflowStage> idToInstanceNode;
+	private final HashMap<String, IWorkflowStage<T, C>> idToInstanceNode;
 	private final HashMap<String, Map<Integer, String>> idToNextNodeId;
 
 	private Class<? extends Stage<T, C>> startNode;
