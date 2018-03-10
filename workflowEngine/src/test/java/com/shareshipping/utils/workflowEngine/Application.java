@@ -19,7 +19,7 @@ public class Application {
 	@Inject
 	public Application(IWorkflowFactory wfFcatory, IGrapher grapher) {
 
-		grapher.draw(LoginWorkflow.class, "testgrapher.gml");
+		grapher.draw(LoginWorkflow.class, "aPath");
 
 		loginWf = (LoginWorkflow) wfFcatory.create(LoginWorkflow.class);
 

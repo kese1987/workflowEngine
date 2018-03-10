@@ -50,7 +50,7 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		this.workflowExecutorService = Executors.newCachedThreadPool();
 	};
 
-	protected abstract Collection<Class<? extends Stage<T, C>>> nodes();
+	public abstract Collection<Class<? extends Stage<T, C>>> nodes();
 
 	@PostConstruct
 	public void configureModule() throws InvalidWorkflowStructure {

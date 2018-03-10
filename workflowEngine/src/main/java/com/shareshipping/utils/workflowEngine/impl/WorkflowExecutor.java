@@ -17,9 +17,7 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 	private final C context;
 	private final HashMap<String, IWorkflowStage<T, C>> nodes;
 	private final String startNodeId;
-	private final String endNodeId;
 
-	private String currentNodeId;
 	private HashMap<String, Map<Integer, String>> idToNextNodeId;
 
 	public WorkflowExecutor(HashMap<String, IWorkflowStage<T, C>> nodes,
@@ -29,7 +27,6 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 		this.nodes = nodes;
 		this.idToNextNodeId = idToNextNodeId;
 		this.startNodeId = startNode;
-		this.endNodeId = endNode;
 		this.returnType = returnType;
 		this.context = context;
 	}

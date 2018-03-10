@@ -1,12 +1,9 @@
 package com.shareshipping.utils.workflowEngine;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.Future;
 
 import com.shareshipping.utils.workflowEngine.impl.Stage;
-import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginContext;
-import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginResult;
 
 public interface IWorkflow<T, C extends IWorkflowContext> {
 
@@ -18,8 +15,5 @@ public interface IWorkflow<T, C extends IWorkflowContext> {
 
 	public abstract Future<T> executeAsync();
 
-	static List<Class<? extends Stage<LoginResult, LoginContext>>> nodes() {
-		return Collections.emptyList();
-
-	};
+	public abstract Collection<Class<? extends Stage<T, C>>> nodes();
 }
