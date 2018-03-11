@@ -2,7 +2,7 @@ package com.shareshipping.utils.workflowEngine;
 
 import java.util.concurrent.Callable;
 
-public interface IWorkflowStage<T, C extends IWorkflowContext> extends Callable<ICompletationToken> {
+public interface IWorkflowTask<T, C extends IWorkflowContext> extends Callable<ICompletationToken> {
 
 	public abstract void process(ICompletationToken token);
 

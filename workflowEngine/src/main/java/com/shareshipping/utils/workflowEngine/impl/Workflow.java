@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.shareshipping.utils.workflowEngine.IWorkflow;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
-import com.shareshipping.utils.workflowEngine.IWorkflowStage;
+import com.shareshipping.utils.workflowEngine.IWorkflowTask;
 import com.shareshipping.utils.workflowEngine.annotations.BooleanGateway;
 import com.shareshipping.utils.workflowEngine.annotations.EndElement;
 import com.shareshipping.utils.workflowEngine.annotations.ErrorHandler;
@@ -32,7 +32,7 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 
 	private final ExecutorService workflowExecutorService;
 	private Collection<Class<? extends WorkflowTask<T, C>>> workflowNodes;
-	private final HashMap<String, IWorkflowStage<T, C>> idToInstanceNode;
+	private final HashMap<String, IWorkflowTask<T, C>> idToInstanceNode;
 	private final HashMap<String, Map<Integer, String>> idToNextNodeId;
 
 	private Class<? extends WorkflowTask<T, C>> startNode;

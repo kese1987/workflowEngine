@@ -9,18 +9,18 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
-import com.shareshipping.utils.workflowEngine.IWorkflowStage;
+import com.shareshipping.utils.workflowEngine.IWorkflowTask;
 
 public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable<T>, Supplier<T> {
 
 	private final T returnType;
 	private final C context;
-	private final HashMap<String, IWorkflowStage<T, C>> nodes;
+	private final HashMap<String, IWorkflowTask<T, C>> nodes;
 	private final String startNodeId;
 
 	private HashMap<String, Map<Integer, String>> idToNextNodeId;
 
-	public WorkflowExecutor(HashMap<String, IWorkflowStage<T, C>> nodes,
+	public WorkflowExecutor(HashMap<String, IWorkflowTask<T, C>> nodes,
 			HashMap<String, Map<Integer, String>> idToNextNodeId, String startNode, String endNode, T returnType,
 			C context) {
 
@@ -36,7 +36,7 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 		String currentNode = startNodeId;
 		while (StringUtils.isNotBlank(currentNode)) {
 
-			IWorkflowStage<T, C> instance = nodes.get(currentNode);
+			IWorkflowTask<T, C> instance = nodes.get(currentNode);
 			ICompletationToken token = new CompletationToken();
 
 			instance.setContext(context);

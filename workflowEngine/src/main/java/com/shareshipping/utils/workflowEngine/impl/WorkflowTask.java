@@ -2,9 +2,9 @@ package com.shareshipping.utils.workflowEngine.impl;
 
 import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
-import com.shareshipping.utils.workflowEngine.IWorkflowStage;
+import com.shareshipping.utils.workflowEngine.IWorkflowTask;
 
-public abstract class WorkflowTask<T, C extends IWorkflowContext> implements IWorkflowStage<T, C> {
+public abstract class WorkflowTask<T, C extends IWorkflowContext> implements IWorkflowTask<T, C> {
 
 	private ICompletationToken token;
 	protected T returnObject;
