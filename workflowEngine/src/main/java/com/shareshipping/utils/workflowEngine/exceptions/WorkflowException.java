@@ -1,4 +1,4 @@
-package com.shareshipping.utils.workflowEngine.impl;
+package com.shareshipping.utils.workflowEngine.exceptions;
 
 public class WorkflowException extends Exception {
 
