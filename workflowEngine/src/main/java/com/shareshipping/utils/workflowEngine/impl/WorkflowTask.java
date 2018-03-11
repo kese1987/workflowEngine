@@ -4,7 +4,7 @@ import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 import com.shareshipping.utils.workflowEngine.IWorkflowStage;
 
-public abstract class Stage<T, C extends IWorkflowContext> implements IWorkflowStage<T, C> {
+public abstract class WorkflowTask<T, C extends IWorkflowContext> implements IWorkflowStage<T, C> {
 
 	private ICompletationToken token;
 	protected T returnObject;

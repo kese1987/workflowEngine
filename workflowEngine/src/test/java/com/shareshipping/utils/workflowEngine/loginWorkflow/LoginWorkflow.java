@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.shareshipping.utils.workflowEngine.impl.Stage;
+import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
 import com.shareshipping.utils.workflowEngine.impl.Workflow;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowEndNode;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.nodes.LoginWorkflowStartNode;
@@ -31,7 +31,7 @@ public class LoginWorkflow extends Workflow<LoginResult, LoginContext> {
 	}
 
 	@Override
-	public List<Class<? extends Stage<LoginResult, LoginContext>>> nodes() {
+	public List<Class<? extends WorkflowTask<LoginResult, LoginContext>>> nodes() {
 		return Arrays.asList(LoginWorkflowStartNode.class, LoginWorkflowEndNode.class, LoginWorkflowTask1Node.class,
 				LoginWorkflowTask2Node.class, LoginWorkflowUserAlreadyLoggedIn.class);
 	}

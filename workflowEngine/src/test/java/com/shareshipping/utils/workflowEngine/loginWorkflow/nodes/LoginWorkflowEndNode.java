@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import com.shareshipping.utils.workflowEngine.ICompletationToken;
 import com.shareshipping.utils.workflowEngine.IEnrico;
 import com.shareshipping.utils.workflowEngine.annotations.EndElement;
-import com.shareshipping.utils.workflowEngine.impl.Stage;
+import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginContext;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginResult;
 
 @EndElement(id = LoginWorkflowEndNode.ID)
-public class LoginWorkflowEndNode extends Stage<LoginResult, LoginContext> {
+public class LoginWorkflowEndNode extends WorkflowTask<LoginResult, LoginContext> {
 
 	public final static String ID = "EndNode";
 

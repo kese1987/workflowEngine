@@ -9,7 +9,7 @@ import com.google.inject.Injector;
 import com.shareshipping.utils.workflowEngine.IWorkflow;
 import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 import com.shareshipping.utils.workflowEngine.graphml.IGrapher;
-import com.shareshipping.utils.workflowEngine.impl.Stage;
+import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
 
 public class Grapher implements IGrapher {
 
@@ -25,9 +25,9 @@ public class Grapher implements IGrapher {
 
 		IWorkflow<T, C> wf = injector.getInstance(workflow);
 
-		Collection<Class<? extends Stage<T, C>>> nodes = wf.nodes();
+		Collection<Class<? extends WorkflowTask<T, C>>> nodes = wf.nodes();
 
-		for (Class<? extends Stage<T, C>> node : nodes) {
+		for (Class<? extends WorkflowTask<T, C>> node : nodes) {
 			Annotation[] annotations = node.getDeclaredAnnotations();
 
 			System.out.println(Arrays.toString(annotations));

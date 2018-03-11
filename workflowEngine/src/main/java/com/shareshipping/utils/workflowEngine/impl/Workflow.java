@@ -31,12 +31,12 @@ import com.shareshipping.utils.workflowEngine.exceptions.InvalidWorkflowStructur
 public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkflow<T, C> {
 
 	private final ExecutorService workflowExecutorService;
-	private Collection<Class<? extends Stage<T, C>>> workflowNodes;
+	private Collection<Class<? extends WorkflowTask<T, C>>> workflowNodes;
 	private final HashMap<String, IWorkflowStage<T, C>> idToInstanceNode;
 	private final HashMap<String, Map<Integer, String>> idToNextNodeId;
 
-	private Class<? extends Stage<T, C>> startNode;
-	private Class<? extends Stage<T, C>> endNode;
+	private Class<? extends WorkflowTask<T, C>> startNode;
+	private Class<? extends WorkflowTask<T, C>> endNode;
 
 	private final Injector injector;
 	private String startNodeId;
@@ -50,7 +50,7 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		this.workflowExecutorService = Executors.newCachedThreadPool();
 	};
 
-	public abstract Collection<Class<? extends Stage<T, C>>> nodes();
+	public abstract Collection<Class<? extends WorkflowTask<T, C>>> nodes();
 
 	@PostConstruct
 	public void configureModule() throws InvalidWorkflowStructure {
@@ -150,15 +150,15 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 
 	}
 
-	private Collection<Class<? extends Stage<T, C>>> getEndNode() {
+	private Collection<Class<? extends WorkflowTask<T, C>>> getEndNode() {
 		return getNodeByAnnotation(EndElement.class);
 	}
 
-	private Collection<Class<? extends Stage<T, C>>> getStartNode() {
+	private Collection<Class<? extends WorkflowTask<T, C>>> getStartNode() {
 		return getNodeByAnnotation(StartElement.class);
 	}
 
-	private Collection<Class<? extends Stage<T, C>>> getNodeByAnnotation(Class<? extends Annotation> cls) {
+	private Collection<Class<? extends WorkflowTask<T, C>>> getNodeByAnnotation(Class<? extends Annotation> cls) {
 		return workflowNodes.stream().filter(c -> c.getDeclaredAnnotationsByType(cls).length == 1)
 				.collect(Collectors.toList());
 
