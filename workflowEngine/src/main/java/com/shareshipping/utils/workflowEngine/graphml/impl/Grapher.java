@@ -87,47 +87,70 @@ public class Grapher implements IGrapher {
 
 		}
 
-		String actualNode;
-		String pointedNode;
-
-		Map<Integer, String> toMap = Maps.newHashMap();
-
 		for (Class<? extends WorkflowTask<T, C>> node : nodes) {
 
 			Annotation[] annotations = node.getDeclaredAnnotations();
 
 			Optional<GraphInfo> metadata = extractGraphInfoFromAnnotation(annotations);
 
-			if (metadata.isPresent()) {
-				if (metadata.get().getId().equals("StartNode")) {
+			Arrays.asList(annotations).stream().filter(a -> WorkflowUtils.isAWorkflowEngineAnnotation(a))
+					.forEach((ann) -> {
 
-					actualNode = metadata.get().getId();
-					pointedNode = metadata.get().getExitFlows().get(0);
+						String actualNode = "";
+						String pointedNode = "";
 
-					System.out.println("POINTED NODESAAAAAAAAAAAAAaa");
-					graph.addEdge(actualNode, pointedNode);
+						if (ann instanceof StartElement) {
+							actualNode = metadata.get().getId();
+							pointedNode = metadata.get().getExitFlows().get(0);
 
-				} else if (metadata.get().getId().equals("booleanGw")) {
+							System.out.println("POINTED NODESAAAAAAAAAAAAAaa");
+							graph.addEdge(actualNode, pointedNode);
 
-					actualNode = metadata.get().getId();
-					pointedNode = metadata.get().getExitFlows().get(0);
+						} else if (ann instanceof BooleanGateway) {
+							actualNode = metadata.get().getId();
+							pointedNode = metadata.get().getExitFlows().get(0);
 
-					graph.addEdge(actualNode, pointedNode);
+							graph.addEdge(actualNode, pointedNode);
 
-					pointedNode = metadata.get().getExitFlows().get(1);
+							pointedNode = metadata.get().getExitFlows().get(1);
 
-					// System.out.println("BOOLEAN GATEWAYY");
-					// System.out.println(metadata.get().getExitFlows().get(0));
-					graph.addEdge(actualNode, pointedNode);
+							// System.out.println("BOOLEAN GATEWAYY");
+							// System.out.println(metadata.get().getExitFlows().get(0));
+							graph.addEdge(actualNode, pointedNode);
+						} else if (ann instanceof UserTaskElement) {
 
-				}
+							actualNode = metadata.get().getId();
+							pointedNode = metadata.get().getExitFlows().get(0);
+							graph.addEdge(actualNode, pointedNode);
+						}
+					});
 
-			}
-
-		}
+			/*
+			 * if (metadata.isPresent()) {
+			 * 
+			 * if (metadata.get().getId().equals("StartNode")) {
+			 * 
+			 * } else if (metadata.get().getId().equals("booleanGw")) {
+			 * 
+			 * actualNode = metadata.get().getId(); pointedNode =
+			 * metadata.get().getExitFlows().get(0);
+			 * 
+			 * graph.addEdge(actualNode, pointedNode);
+			 * 
+			 * pointedNode = metadata.get().getExitFlows().get(1);
+			 * 
+			 * // System.out.println("BOOLEAN GATEWAYY"); //
+			 * System.out.println(metadata.get().getExitFlows().get(0));
+			 * graph.addEdge(actualNode, pointedNode);
+			 * 
+			 * }
+			 * 
+			 * }
+			 * 
+			 */ }
 		// write to file
 		new File("gml-output").mkdir();// create folder
-		File outputFile = new File("gml-output" + File.separator + "example1.gml");
+		File outputFile = new File("gml-output" + File.separator + "example2.gml");
 		try (Writer output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "utf-8"))) {
 			writer.export(output, graph);
 		} catch (UnsupportedEncodingException e) {
