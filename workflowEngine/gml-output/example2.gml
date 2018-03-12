@@ -67,6 +67,51 @@ graph
 	node
 	[
 		id 5
+		label "TASK3"
+		graphics
+		[
+			type	"rectangle"
+			fill	"#c0c0c0ff"
+			line	"#000000ff"
+		]
+		LabelGraphics
+		[
+			fontStyle	"ITALIC"
+		]
+	]
+	node
+	[
+		id 6
+		label "TASK4"
+		graphics
+		[
+			type	"rectangle"
+			fill	"#c0c0c0ff"
+			line	"#000000ff"
+		]
+		LabelGraphics
+		[
+			fontStyle	"ITALIC"
+		]
+	]
+	node
+	[
+		id 7
+		label "TASK5"
+		graphics
+		[
+			type	"rectangle"
+			fill	"#c0c0c0ff"
+			line	"#000000ff"
+		]
+		LabelGraphics
+		[
+			fontStyle	"ITALIC"
+		]
+	]
+	node
+	[
+		id 8
 		label "booleanGw"
 		graphics
 		[
@@ -81,9 +126,9 @@ graph
 	]
 	edge
 	[
-		id 6
+		id 9
 		source 1
-		target 5
+		target 8
 		graphics
 		[
 			fill	"#000000ff"
@@ -93,7 +138,7 @@ graph
 	]
 	edge
 	[
-		id 7
+		id 10
 		source 3
 		target 2
 		graphics
@@ -105,7 +150,7 @@ graph
 	]
 	edge
 	[
-		id 8
+		id 11
 		source 4
 		target 2
 		graphics
@@ -117,8 +162,44 @@ graph
 	]
 	edge
 	[
-		id 9
+		id 12
 		source 5
+		target 2
+		graphics
+		[
+			fill	"#000000ff"
+			style	"DASHED"
+			targetArrow	"short"
+		]
+	]
+	edge
+	[
+		id 13
+		source 6
+		target 2
+		graphics
+		[
+			fill	"#000000ff"
+			style	"DASHED"
+			targetArrow	"short"
+		]
+	]
+	edge
+	[
+		id 14
+		source 7
+		target 2
+		graphics
+		[
+			fill	"#000000ff"
+			style	"DASHED"
+			targetArrow	"short"
+		]
+	]
+	edge
+	[
+		id 15
+		source 8
 		target 4
 		graphics
 		[
@@ -129,8 +210,8 @@ graph
 	]
 	edge
 	[
-		id 10
-		source 5
+		id 16
+		source 8
 		target 3
 		graphics
 		[
