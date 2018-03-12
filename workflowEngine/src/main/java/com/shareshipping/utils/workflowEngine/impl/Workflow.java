@@ -27,6 +27,7 @@ import com.shareshipping.utils.workflowEngine.annotations.Gateway;
 import com.shareshipping.utils.workflowEngine.annotations.StartElement;
 import com.shareshipping.utils.workflowEngine.annotations.UserTaskElement;
 import com.shareshipping.utils.workflowEngine.exceptions.InvalidWorkflowStructure;
+import com.shareshipping.utils.workflowEngine.utils.WorkflowUtils;
 
 public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkflow<T, C> {
 
@@ -107,44 +108,45 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		workflowNodes.stream().forEach((node) -> {
 			Annotation[] annotations = node.getDeclaredAnnotations();
 
-			Arrays.asList(annotations).stream().filter(a -> isAWorkflowEngineAnnotation(a)).forEach((ann) -> {
+			Arrays.asList(annotations).stream().filter(a -> WorkflowUtils.isAWorkflowEngineAnnotation(a))
+					.forEach((ann) -> {
 
-				String id = "";
-				Map<Integer, String> toMap = Maps.newHashMap();
+						String id = "";
+						Map<Integer, String> toMap = Maps.newHashMap();
 
-				if (ann instanceof BooleanGateway) {
-					BooleanGateway bgAnn = (BooleanGateway) ann;
-					id = bgAnn.id();
-					toMap.put(0, bgAnn.noFlow());
-					toMap.put(1, bgAnn.yesFlow());
-				} else if (ann instanceof EndElement) {
-					EndElement eeAnn = (EndElement) ann;
-					id = eeAnn.id();
-					toMap.put(0, null);
-				} else if (ann instanceof ErrorHandler) {
-					ErrorHandler ehAnn = (ErrorHandler) ann;
-					id = ehAnn.id();
-					toMap.put(0, null);
-				} else if (ann instanceof Gateway) {
-					Gateway gAnn = (Gateway) ann;
-					toMap.put(0, gAnn.flow1());
-					toMap.put(1, gAnn.flow2());
-					toMap.put(2, gAnn.flow3());
-					toMap.put(3, gAnn.flow4());
-					toMap.put(4, gAnn.flow5());
-				} else if (ann instanceof StartElement) {
-					StartElement stAnn = (StartElement) ann;
-					id = stAnn.id();
-					toMap.put(0, stAnn.to());
-				} else if (ann instanceof UserTaskElement) {
-					UserTaskElement utAnn = (UserTaskElement) ann;
-					id = utAnn.id();
-					toMap.put(0, utAnn.to());
-				}
+						if (ann instanceof BooleanGateway) {
+							BooleanGateway bgAnn = (BooleanGateway) ann;
+							id = bgAnn.id();
+							toMap.put(0, bgAnn.noFlow());
+							toMap.put(1, bgAnn.yesFlow());
+						} else if (ann instanceof EndElement) {
+							EndElement eeAnn = (EndElement) ann;
+							id = eeAnn.id();
+							toMap.put(0, null);
+						} else if (ann instanceof ErrorHandler) {
+							ErrorHandler ehAnn = (ErrorHandler) ann;
+							id = ehAnn.id();
+							toMap.put(0, null);
+						} else if (ann instanceof Gateway) {
+							Gateway gAnn = (Gateway) ann;
+							toMap.put(0, gAnn.flow1());
+							toMap.put(1, gAnn.flow2());
+							toMap.put(2, gAnn.flow3());
+							toMap.put(3, gAnn.flow4());
+							toMap.put(4, gAnn.flow5());
+						} else if (ann instanceof StartElement) {
+							StartElement stAnn = (StartElement) ann;
+							id = stAnn.id();
+							toMap.put(0, stAnn.to());
+						} else if (ann instanceof UserTaskElement) {
+							UserTaskElement utAnn = (UserTaskElement) ann;
+							id = utAnn.id();
+							toMap.put(0, utAnn.to());
+						}
 
-				idToInstanceNode.put(id, injector.getInstance(node));
-				idToNextNodeId.put(id, toMap);
-			});
+						idToInstanceNode.put(id, injector.getInstance(node));
+						idToNextNodeId.put(id, toMap);
+					});
 
 		});
 
@@ -162,11 +164,6 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		return workflowNodes.stream().filter(c -> c.getDeclaredAnnotationsByType(cls).length == 1)
 				.collect(Collectors.toList());
 
-	}
-
-	private boolean isAWorkflowEngineAnnotation(Annotation a) {
-		return a instanceof BooleanGateway || a instanceof EndElement || a instanceof ErrorHandler
-				|| a instanceof Gateway || a instanceof StartElement || a instanceof UserTaskElement;
 	}
 
 }
