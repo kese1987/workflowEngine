@@ -4,133 +4,90 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import com.github.systemdir.gml.YedGmlWriter;
-import com.google.common.collect.Maps;
+import com.github.systemdir.gml.YedGmlWriter.Builder;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.shareshipping.utils.workflowEngine.IWorkflow;
-import com.shareshipping.utils.workflowEngine.IWorkflowContext;
-import com.shareshipping.utils.workflowEngine.annotations.BooleanGateway;
-import com.shareshipping.utils.workflowEngine.annotations.EndElement;
-import com.shareshipping.utils.workflowEngine.annotations.ErrorHandler;
-import com.shareshipping.utils.workflowEngine.annotations.Gateway;
-import com.shareshipping.utils.workflowEngine.annotations.StartElement;
-import com.shareshipping.utils.workflowEngine.annotations.UserTaskElement;
 import com.shareshipping.utils.workflowEngine.graphml.IGrapher;
-import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
-import com.shareshipping.utils.workflowEngine.utils.GraphInfo;
-import com.shareshipping.utils.workflowEngine.utils.WorkflowUtils;
+import com.shareshipping.utils.workflowEngine.graphml.IGraphicsProvider;
+import com.shareshipping.utils.workflowEngine.impl.WorkflowInfo;
 
 public class Grapher implements IGrapher {
 
-	private final Injector injector;
+	private final IGraphicsProvider<String, DefaultEdge, Object> graphicsProvider = new GraphicsProvider<>();
 
 	@Inject
-	public Grapher(Injector injector) {
-		this.injector = injector;
+	public Grapher() {
 	}
 
 	@Override
-	public <T, C extends IWorkflowContext> void draw(Class<? extends IWorkflow<T, C>> workflow, String path) {
+	public void draw(HashMap<String, WorkflowInfo> workflowInfo, String path) {
 
-		IWorkflow<T, C> wf = injector.getInstance(workflow);
+		graphicsProvider.setWorkflowInfo(workflowInfo);
 
-		Collection<Class<? extends WorkflowTask<T, C>>> nodes = wf.nodes();
+		Builder<String, DefaultEdge, Object> writerBuilder = new YedGmlWriter.Builder<String, DefaultEdge, Object>(
+				graphicsProvider, YedGmlWriter.PrintLabels.PRINT_VERTEX_LABELS,
+				YedGmlWriter.PrintLabels.PRINT_EDGE_LABELS);
 
-		// get graph from user
-		SimpleGraph<String, DefaultEdge> toDraw = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+		writerBuilder.setEdgeLabelProvider(new Function<DefaultEdge, String>() {
 
-		// define the look and feel of the graph
-		GrapherProvider graphicsProvider = new GrapherProvider();
+			@Override
+			public String apply(DefaultEdge t) {
+
+				String[] fromTo = t.toString().replace("(", "").replace(")", "").replaceAll("\\s+", " ")
+						.split("\\s:\\s");
+
+				WorkflowInfo nodeInfoFrom = workflowInfo.get(fromTo[0]);
+				Integer toNodeId = nodeInfoFrom.getExitFlows().inverse().get(fromTo[1]);
+
+				switch (nodeInfoFrom.getNodeType()) {
+				case BOOLEAN_GATEWAY_ELEMENT:
+					if (toNodeId == 0) {
+						return "false";
+					} else {
+						return "true";
+					}
+				case GATEWAY_ELEMENT:
+					return "flow " + toNodeId;
+				default:
+					return "";
+				}
+			}
+		});
 
 		// get the gml writer
-		YedGmlWriter<String, DefaultEdge, Object> writer = new YedGmlWriter.Builder<String, DefaultEdge, Object>(
-				graphicsProvider, YedGmlWriter.PrintLabels.PRINT_VERTEX_LABELS).build();
-
-		int verticeAmount = nodes.size();
+		YedGmlWriter<String, DefaultEdge, Object> writer = writerBuilder.build();
 
 		SimpleGraph<String, DefaultEdge> graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
 
-		for (Class<? extends WorkflowTask<T, C>> node : nodes) {
-			Annotation[] annotations = node.getDeclaredAnnotations();
-
-			Optional<GraphInfo> metadata = extractGraphInfoFromAnnotation(annotations);
-
-			if (metadata.isPresent()) {
-
-				graph.addVertex(metadata.get().getId());
-
-			}
-
+		for (Map.Entry<String, WorkflowInfo> node : workflowInfo.entrySet()) {
+			graph.addVertex(node.getKey());
 		}
 
-		for (Class<? extends WorkflowTask<T, C>> node : nodes) {
+		for (Map.Entry<String, WorkflowInfo> node : workflowInfo.entrySet()) {
 
-			Annotation[] annotations = node.getDeclaredAnnotations();
+			for (Map.Entry<Integer, String> flow : node.getValue().getExitFlows().entrySet()) {
+				String nodeFrom = node.getKey();
+				String nodeTo = flow.getValue();
+				try {
+					if (StringUtils.isNotBlank(nodeTo)) {
+						graph.addEdge(nodeFrom, nodeTo);
+					}
+				} catch (Exception e) {
+					System.out.println(e.getMessage() + "from: " + nodeFrom + " to: " + nodeTo);
+				}
 
-			Optional<GraphInfo> metadata = extractGraphInfoFromAnnotation(annotations);
-
-			Arrays.asList(annotations).stream().filter(a -> WorkflowUtils.isAWorkflowEngineAnnotation(a))
-					.forEach((ann) -> {
-
-						String actualNode = "";
-						String pointedNode = "";
-
-						if (ann instanceof StartElement) {
-							actualNode = metadata.get().getId();
-							pointedNode = metadata.get().getExitFlows().get(0);
-
-							graph.addEdge(actualNode, pointedNode);
-
-						} else if (ann instanceof BooleanGateway) {
-							actualNode = metadata.get().getId();
-							pointedNode = metadata.get().getExitFlows().get(0);
-
-							graph.addEdge(actualNode, pointedNode);
-
-							pointedNode = metadata.get().getExitFlows().get(1);
-							graph.addEdge(actualNode, pointedNode);
-
-						} else if (ann instanceof UserTaskElement) {
-
-							actualNode = metadata.get().getId();
-							pointedNode = metadata.get().getExitFlows().get(0);
-							graph.addEdge(actualNode, pointedNode);
-
-						} else if (ann instanceof Gateway) {
-
-							actualNode = metadata.get().getId();
-							pointedNode = metadata.get().getExitFlows().get(0);
-							graph.addEdge(actualNode, pointedNode);
-
-							pointedNode = metadata.get().getExitFlows().get(1);
-							graph.addEdge(actualNode, pointedNode);
-
-							pointedNode = metadata.get().getExitFlows().get(2);
-							graph.addEdge(actualNode, pointedNode);
-
-							pointedNode = metadata.get().getExitFlows().get(3);
-							graph.addEdge(actualNode, pointedNode);
-
-							pointedNode = metadata.get().getExitFlows().get(4);
-							graph.addEdge(actualNode, pointedNode);
-						}
-
-					});
+			}
 
 		}
 
@@ -138,69 +95,16 @@ public class Grapher implements IGrapher {
 		new File("gml-output").mkdir();
 		// create folder
 		File outputFile = new File("gml-output" + File.separator + "example2.gml");
-		try (Writer output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "utf-8"))) {
+
+		Writer output;
+		try {
+			output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "utf-8"));
 			writer.export(output, graph);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (UnsupportedEncodingException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		System.out.println("Exported to: " + outputFile.getAbsolutePath());
-	}
-
-	public Optional<GraphInfo> extractGraphInfoFromAnnotation(Annotation[] annotations) {
-
-		GraphInfo info = new GraphInfo();
-
-		Arrays.asList(annotations).stream().filter(a -> WorkflowUtils.isAWorkflowEngineAnnotation(a)).forEach((ann) -> {
-
-			String id = "";
-
-			Map<Integer, String> exitFlows = Maps.newHashMap();
-
-			if (ann instanceof BooleanGateway) {
-				BooleanGateway bgAnn = (BooleanGateway) ann;
-				id = bgAnn.id();
-				exitFlows.put(0, bgAnn.noFlow());
-
-				exitFlows.put(1, bgAnn.yesFlow());
-			} else if (ann instanceof EndElement) {
-				EndElement eeAnn = (EndElement) ann;
-				id = eeAnn.id();
-				exitFlows.put(0, null);
-			} else if (ann instanceof ErrorHandler) {
-				ErrorHandler ehAnn = (ErrorHandler) ann;
-				id = ehAnn.id();
-				exitFlows.put(0, null);
-			} else if (ann instanceof Gateway) {
-				Gateway gAnn = (Gateway) ann;
-				exitFlows.put(0, gAnn.flow1());
-				exitFlows.put(1, gAnn.flow2());
-				exitFlows.put(2, gAnn.flow3());
-				exitFlows.put(3, gAnn.flow4());
-				exitFlows.put(4, gAnn.flow5());
-			} else if (ann instanceof StartElement) {
-				StartElement stAnn = (StartElement) ann;
-				id = stAnn.id();
-				exitFlows.put(0, stAnn.to());
-			} else if (ann instanceof UserTaskElement) {
-				UserTaskElement utAnn = (UserTaskElement) ann;
-				id = utAnn.id();
-				exitFlows.put(0, utAnn.to());
-			}
-
-			info.setId(id);
-			info.setExitFlows(exitFlows);
-
-		});
-
-		return StringUtils.isBlank(info.getId()) ? Optional.empty() : Optional.ofNullable(info);
 
 	}
 

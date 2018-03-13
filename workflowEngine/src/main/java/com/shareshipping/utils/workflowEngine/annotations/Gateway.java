@@ -12,13 +12,5 @@ public @interface Gateway {
 
 	String id();
 
-	String flow1();
-
-	String flow2() default "";
-
-	String flow3() default "";
-
-	String flow4() default "";
-
-	String flow5() default "";
+	String[] flows();
 }

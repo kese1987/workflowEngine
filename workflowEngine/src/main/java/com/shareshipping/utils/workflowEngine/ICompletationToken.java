@@ -6,8 +6,6 @@ public interface ICompletationToken {
 
 	public abstract Throwable getException();
 
-	public boolean isErrored();
-
 	public abstract void done();
 
 	public abstract void done(boolean flow);

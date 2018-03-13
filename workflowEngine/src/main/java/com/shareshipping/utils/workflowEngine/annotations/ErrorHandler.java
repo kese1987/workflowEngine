@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface ErrorHandler {
-	Class<?> exceptionClass();
+	Class<? extends Throwable> exceptionClass();
 
 	String id();
+
+	String to();
 }

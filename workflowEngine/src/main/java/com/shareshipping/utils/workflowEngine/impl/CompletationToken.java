@@ -6,7 +6,6 @@ public class CompletationToken implements ICompletationToken {
 
 	private int flow = 0;
 	private Throwable exception;
-	private boolean errored = false;
 
 	@Override
 	public void done() {
@@ -26,19 +25,16 @@ public class CompletationToken implements ICompletationToken {
 	@Override
 	public void doneWithError(Throwable e) {
 		this.exception = e;
-		errored = true;
 	}
 
+	@Override
 	public int getFlow() {
 		return flow;
 	}
 
+	@Override
 	public Throwable getException() {
 		return exception;
-	}
-
-	public boolean isErrored() {
-		return errored;
 	}
 
 }

@@ -1,10 +1,11 @@
 package com.shareshipping.utils.workflowEngine.graphml;
 
-import com.shareshipping.utils.workflowEngine.IWorkflow;
-import com.shareshipping.utils.workflowEngine.IWorkflowContext;
+import java.util.HashMap;
+
+import com.shareshipping.utils.workflowEngine.impl.WorkflowInfo;
 
 public interface IGrapher {
 
-	public abstract <T, C extends IWorkflowContext> void draw(Class<? extends IWorkflow<T, C>> wf, String path);
+	public abstract void draw(HashMap<String, WorkflowInfo> workflowInfo, String path);
 
 }

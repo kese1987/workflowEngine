@@ -6,7 +6,8 @@ import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginContext;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginResult;
 
-@Gateway(id = LoginWorkflowGatewayNode.ID, flow1 = LoginWorkflowTask3Node.ID, flow2 = LoginWorkflowTask4Node.ID)
+@Gateway(id = LoginWorkflowGatewayNode.ID, flows = { LoginWorkflowTask3Node.ID, LoginWorkflowTask4Node.ID,
+		LoginWorkflowTask5Node.ID })
 public class LoginWorkflowGatewayNode extends WorkflowTask<LoginResult, LoginContext> {
 
 	public static final String ID = "Gw";
@@ -14,7 +15,7 @@ public class LoginWorkflowGatewayNode extends WorkflowTask<LoginResult, LoginCon
 	@Override
 	public void process(ICompletationToken token) {
 
-		token.done(true);
+		token.done(0);
 
 	}
 

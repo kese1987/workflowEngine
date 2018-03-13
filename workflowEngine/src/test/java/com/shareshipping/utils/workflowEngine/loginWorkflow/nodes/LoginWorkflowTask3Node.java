@@ -15,6 +15,8 @@ public class LoginWorkflowTask3Node extends WorkflowTask<LoginResult, LoginConte
 	@Override
 	public void process(ICompletationToken token) {
 
+		String x = null;
+		x.equals("w");
 		System.out.println(ID);
 		token.done();
 

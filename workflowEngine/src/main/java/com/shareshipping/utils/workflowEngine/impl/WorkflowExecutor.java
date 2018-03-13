@@ -15,45 +15,64 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 
 	private final T returnType;
 	private final C context;
-	private final HashMap<String, IWorkflowTask<T, C>> nodes;
-	private final String startNodeId;
+	private final String startFromNode;
+	private final HashMap<String, WorkflowInfo> nodes;
+	private final HashMap<Class<? extends Throwable>, String> errorHandlerMap;
 
-	private HashMap<String, Map<Integer, String>> idToNextNodeId;
-
-	public WorkflowExecutor(HashMap<String, IWorkflowTask<T, C>> nodes,
-			HashMap<String, Map<Integer, String>> idToNextNodeId, String startNode, String endNode, T returnType,
+	public WorkflowExecutor(HashMap<String, WorkflowInfo> nodes,
+			HashMap<Class<? extends Throwable>, String> errorHandlerMap, String startFromNode, T returnType,
 			C context) {
 
 		this.nodes = nodes;
-		this.idToNextNodeId = idToNextNodeId;
-		this.startNodeId = startNode;
+		this.errorHandlerMap = errorHandlerMap;
+		this.startFromNode = startFromNode;
 		this.returnType = returnType;
 		this.context = context;
 	}
 
 	private void runWorkflow() {
 
-		String currentNode = startNodeId;
+		String currentNode = startFromNode;
 		while (StringUtils.isNotBlank(currentNode)) {
 
-			IWorkflowTask<T, C> instance = nodes.get(currentNode);
+			WorkflowInfo nodeInfo = nodes.get(currentNode);
+
+			@SuppressWarnings("unchecked")
+			IWorkflowTask<T, C> instance = (IWorkflowTask<T, C>) nodeInfo.getInstance();
+
 			ICompletationToken token = new CompletationToken();
 
 			instance.setContext(context);
 			instance.setReturnValue(returnType);
 
-			instance.process(token);
-
-			if (!token.isErrored()) {
+			try {
+				instance.process(token);
 
 				int flow = token.getFlow();
-				if (idToNextNodeId.containsKey(currentNode)) {
-
-					Map<Integer, String> fromFlowToIdMap = idToNextNodeId.get(currentNode);
-					currentNode = fromFlowToIdMap.get(flow);
-
+				if (nodeInfo.exitFlows.containsKey(flow)) {
+					currentNode = nodeInfo.exitFlows.get(flow);
 				}
+
+			} catch (Throwable e) {
+
+				for (Map.Entry<Class<? extends Throwable>, String> handledException : errorHandlerMap.entrySet()) {
+					Class<? extends Throwable> exception = handledException.getKey();
+					if (exception.isAssignableFrom(e.getClass()) && e.getClass().isAssignableFrom(exception)) {
+						currentNode = handledException.getValue();
+						break;
+					}
+				}
+
+				for (Map.Entry<Class<? extends Throwable>, String> handledException : errorHandlerMap.entrySet()) {
+					Class<? extends Throwable> exception = handledException.getKey();
+					if (exception.isAssignableFrom(e.getClass())) {
+						currentNode = handledException.getValue();
+						break;
+					}
+				}
+
 			}
+
 		}
 	}
 

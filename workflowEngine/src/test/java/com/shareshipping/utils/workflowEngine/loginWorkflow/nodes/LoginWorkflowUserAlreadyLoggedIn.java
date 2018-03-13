@@ -17,7 +17,7 @@ public class LoginWorkflowUserAlreadyLoggedIn extends WorkflowTask<LoginResult, 
 	public void process(ICompletationToken token) {
 
 		Random rnd = new Random();
-		token.done(true);
+		token.done(false);
 
 	}
 
