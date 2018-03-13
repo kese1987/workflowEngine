@@ -1,4 +1,4 @@
-package com.shareshipping.utils.workflowEngine;
+package com.shareshipping.utils.workflowEngine.guice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,6 +14,7 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
+import com.shareshipping.utils.workflowEngine.IWorkflowFactory;
 import com.shareshipping.utils.workflowEngine.graphml.IGrapher;
 import com.shareshipping.utils.workflowEngine.graphml.impl.Grapher;
 import com.shareshipping.utils.workflowEngine.impl.WorkflowFactory;

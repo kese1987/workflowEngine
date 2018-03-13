@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.shareshipping.utils.workflowEngine.exceptions.WorkflowException;
+import com.shareshipping.utils.workflowEngine.guice.WorkflowEngineModule;
 
 /**
  * Unit test for simple App.
