@@ -6,7 +6,7 @@ import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginContext;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginResult;
 
-@ErrorHandler(id = LoginWorkflowErrorHandler.ID, to = LoginWorkflowEndNode.ID, exceptionClass = NullPointerException.class)
+@ErrorHandler(id = LoginWorkflowErrorHandlerNull.ID, to = LoginWorkflowEndNode.ID, exceptionClass = NullPointerException.class)
 public class LoginWorkflowErrorHandlerNull extends WorkflowTask<LoginResult, LoginContext> {
 
 	public final static String ID = "ErrorHandlerNull";

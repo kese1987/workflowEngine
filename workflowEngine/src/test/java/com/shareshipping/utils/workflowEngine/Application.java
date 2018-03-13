@@ -1,7 +1,5 @@
 package com.shareshipping.utils.workflowEngine;
 
-import java.util.concurrent.CompletableFuture;
-
 import javax.annotation.PostConstruct;
 
 import com.google.inject.Inject;
@@ -27,11 +25,12 @@ public class Application {
 
 	public void run() {
 		LoginResult result = loginWf.execute();
-		System.out.println(result.s);
-		CompletableFuture<Void> future = loginWf.executeAsync().thenAccept(s -> System.out.println(s.s));
+		// System.out.println(result.s);
+		// CompletableFuture<Void> future = loginWf.executeAsync().thenAccept(s ->
+		// System.out.println(s.s));
 
-		while (!future.isDone())
-			;
+		// while (!future.isDone())
+		// ;
 
 	}
 

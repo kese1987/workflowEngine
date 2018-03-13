@@ -71,7 +71,9 @@ public class Grapher implements IGrapher {
 		SimpleGraph<String, DefaultEdge> graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
 
 		for (Map.Entry<String, WorkflowInfo> node : workflowInfo.entrySet()) {
+			System.out.println("vertex:" + node.getKey());
 			graph.addVertex(node.getKey());
+
 		}
 
 		for (Map.Entry<String, WorkflowInfo> node : workflowInfo.entrySet()) {

@@ -55,19 +55,24 @@ public class WorkflowExecutor<T, C extends IWorkflowContext> implements Callable
 
 			} catch (Throwable e) {
 
+				boolean found = false;
+
 				for (Map.Entry<Class<? extends Throwable>, String> handledException : errorHandlerMap.entrySet()) {
 					Class<? extends Throwable> exception = handledException.getKey();
 					if (exception.isAssignableFrom(e.getClass()) && e.getClass().isAssignableFrom(exception)) {
 						currentNode = handledException.getValue();
+						found = true;
 						break;
 					}
 				}
 
-				for (Map.Entry<Class<? extends Throwable>, String> handledException : errorHandlerMap.entrySet()) {
-					Class<? extends Throwable> exception = handledException.getKey();
-					if (exception.isAssignableFrom(e.getClass())) {
-						currentNode = handledException.getValue();
-						break;
+				if (!found) {
+					for (Map.Entry<Class<? extends Throwable>, String> handledException : errorHandlerMap.entrySet()) {
+						Class<? extends Throwable> exception = handledException.getKey();
+						if (exception.isAssignableFrom(e.getClass())) {
+							currentNode = handledException.getValue();
+							break;
+						}
 					}
 				}
 

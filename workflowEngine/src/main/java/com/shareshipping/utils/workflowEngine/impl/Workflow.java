@@ -37,7 +37,6 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 	private final IGrapher grapher;
 
 	private static String startNodeId = "";
-	private static String endNodeId = "";
 
 	@Inject
 	public Workflow(Injector injector, IGrapher grapher) {
@@ -105,7 +104,6 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 							infoNode.addExitFlow(1, bgAnn.yesFlow());
 						} else if (ann instanceof EndElement) {
 							EndElement eeAnn = (EndElement) ann;
-							endNodeId = eeAnn.id();
 							infoNode.setNodeId(eeAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.END_ELEMENT);
 							infoNode.addExitFlow(0, null);
