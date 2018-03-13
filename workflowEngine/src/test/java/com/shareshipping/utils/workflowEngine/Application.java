@@ -24,6 +24,7 @@ public class Application {
 	}
 
 	public void run() {
+		@SuppressWarnings("unused")
 		LoginResult result = loginWf.execute();
 		// System.out.println(result.s);
 		// CompletableFuture<Void> future = loginWf.executeAsync().thenAccept(s ->

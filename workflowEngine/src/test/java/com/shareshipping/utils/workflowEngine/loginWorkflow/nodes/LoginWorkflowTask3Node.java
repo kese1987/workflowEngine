@@ -6,7 +6,7 @@ import com.shareshipping.utils.workflowEngine.impl.WorkflowTask;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginContext;
 import com.shareshipping.utils.workflowEngine.loginWorkflow.LoginResult;
 
-@UserTaskElement(id = LoginWorkflowTask3Node.ID, to = LoginWorkflowEndNode.ID)
+@UserTaskElement(id = LoginWorkflowTask3Node.ID, to = LoginWorkflowForkNode.ID)
 
 public class LoginWorkflowTask3Node extends WorkflowTask<LoginResult, LoginContext> {
 
@@ -15,8 +15,6 @@ public class LoginWorkflowTask3Node extends WorkflowTask<LoginResult, LoginConte
 	@Override
 	public void process(ICompletationToken token) {
 
-		String x = null;
-		x.equals("w");
 		System.out.println(ID);
 		token.done();
 

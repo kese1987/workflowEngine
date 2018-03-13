@@ -19,7 +19,9 @@ import com.shareshipping.utils.workflowEngine.IWorkflowContext;
 import com.shareshipping.utils.workflowEngine.annotations.BooleanGateway;
 import com.shareshipping.utils.workflowEngine.annotations.EndElement;
 import com.shareshipping.utils.workflowEngine.annotations.ErrorHandler;
+import com.shareshipping.utils.workflowEngine.annotations.ForkElement;
 import com.shareshipping.utils.workflowEngine.annotations.Gateway;
+import com.shareshipping.utils.workflowEngine.annotations.JoinElement;
 import com.shareshipping.utils.workflowEngine.annotations.StartElement;
 import com.shareshipping.utils.workflowEngine.annotations.UserTaskElement;
 import com.shareshipping.utils.workflowEngine.enums.NodeTypeEnum;
@@ -39,7 +41,8 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 	private static String startNodeId = "";
 
 	@Inject
-	public Workflow(Injector injector, IGrapher grapher) {
+	public Workflow(Injector injector,
+					IGrapher grapher) {
 		this.injector = injector;
 		this.grapher = grapher;
 		this.workflowExecutorService = Executors.newCachedThreadPool();
@@ -51,7 +54,8 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 	@PostConstruct
 	public void initializeWorkflow() {
 		initializeNodeIdMap();
-		grapher.draw(workflowInfo, "");
+		grapher.draw(	workflowInfo,
+						"");
 	}
 
 	@Override
@@ -60,8 +64,8 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 		T returnVal = injector.getInstance(withReturnType());
 		C context = injector.getInstance(withContext());
 
-		return CompletableFuture.supplyAsync(
-				new WorkflowExecutor<T, C>(workflowInfo, errorHandlerMap, startNodeId, returnVal, context));
+		return CompletableFuture
+				.supplyAsync(new WorkflowExecutor<T, C>(workflowInfo, errorHandlerMap, startNodeId, returnVal, context));
 
 	}
 
@@ -73,11 +77,9 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 
 		try {
 
-			T x = workflowExecutorService
+			return workflowExecutorService
 					.submit(new WorkflowExecutor<T, C>(workflowInfo, errorHandlerMap, startNodeId, returnVal, context))
 					.get();
-
-			return x;
 
 		} catch (InterruptedException | ExecutionException e) {
 			return null;
@@ -100,41 +102,65 @@ public abstract class Workflow<T, C extends IWorkflowContext> implements IWorkfl
 							BooleanGateway bgAnn = (BooleanGateway) ann;
 							infoNode.setNodeId(bgAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.BOOLEAN_GATEWAY_ELEMENT);
-							infoNode.addExitFlow(0, bgAnn.noFlow());
-							infoNode.addExitFlow(1, bgAnn.yesFlow());
+							infoNode.addExitFlow(	0,
+													bgAnn.noFlow());
+							infoNode.addExitFlow(	1,
+													bgAnn.yesFlow());
 						} else if (ann instanceof EndElement) {
 							EndElement eeAnn = (EndElement) ann;
 							infoNode.setNodeId(eeAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.END_ELEMENT);
-							infoNode.addExitFlow(0, null);
+							infoNode.addExitFlow(	0,
+													null);
 						} else if (ann instanceof ErrorHandler) {
 							ErrorHandler ehAnn = (ErrorHandler) ann;
-							errorHandlerMap.put(ehAnn.exceptionClass(), ehAnn.id());
+							errorHandlerMap.put(ehAnn.exceptionClass(),
+												ehAnn.id());
 							infoNode.setNodeId(ehAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.ERROR_HANDLER_ELEMENT);
-							infoNode.addExitFlow(0, ehAnn.to());
+							infoNode.addExitFlow(	0,
+													ehAnn.to());
 						} else if (ann instanceof Gateway) {
 							Gateway gAnn = (Gateway) ann;
 							infoNode.setNodeId(gAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.GATEWAY_ELEMENT);
 							int flowId = 0;
 							for (String flow : gAnn.flows()) {
-								infoNode.addExitFlow(flowId++, flow);
+								infoNode.addExitFlow(	flowId++,
+														flow);
 							}
 						} else if (ann instanceof StartElement) {
 							StartElement stAnn = (StartElement) ann;
 							startNodeId = stAnn.id();
 							infoNode.setNodeId(stAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.START_ELEMENT);
-							infoNode.addExitFlow(0, stAnn.to());
+							infoNode.addExitFlow(	0,
+													stAnn.to());
 						} else if (ann instanceof UserTaskElement) {
 							UserTaskElement utAnn = (UserTaskElement) ann;
 							infoNode.setNodeId(utAnn.id());
 							infoNode.setNodeType(NodeTypeEnum.USER_TASK_ELEMENT);
-							infoNode.addExitFlow(0, utAnn.to());
+							infoNode.addExitFlow(	0,
+													utAnn.to());
+						} else if (ann instanceof ForkElement) {
+							ForkElement forkAnn = (ForkElement) ann;
+							infoNode.setNodeId(forkAnn.id());
+							infoNode.setNodeType(NodeTypeEnum.FORK_ELEMENT);
+							int flowId = 0;
+							for (String flow : forkAnn.parallelFlows()) {
+								infoNode.addExitFlow(	flowId++,
+														flow);
+							}
+						} else if (ann instanceof JoinElement) {
+							JoinElement jAnn = (JoinElement) ann;
+							infoNode.setNodeId(jAnn.id());
+							infoNode.setNodeType(NodeTypeEnum.JOIN_ELEMENT);
+							infoNode.addExitFlow(	0,
+													jAnn.to());
 						}
 
-						workflowInfo.put(infoNode.nodeId, infoNode);
+						workflowInfo.put(	infoNode.nodeId,
+											infoNode);
 
 					});
 

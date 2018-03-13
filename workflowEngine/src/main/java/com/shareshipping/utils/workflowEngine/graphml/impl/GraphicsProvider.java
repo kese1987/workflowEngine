@@ -47,6 +47,10 @@ public class GraphicsProvider<V, E, G> implements IGraphicsProvider<V, E, G> {
 		case USER_TASK_ELEMENT:
 			nodeBuilder.setForm(Form.rectangle);
 			break;
+		case JOIN_ELEMENT:
+		case FORK_ELEMENT:
+			nodeBuilder.setForm(Form.hexagon);
+			nodeBuilder.setFill(Color.BLUE);
 		default:
 			break;
 
@@ -56,7 +60,8 @@ public class GraphicsProvider<V, E, G> implements IGraphicsProvider<V, E, G> {
 	}
 
 	@Override
-	public NodeGraphicDefinition getGroupGraphics(G group, Set<V> groupElements) {
+	public NodeGraphicDefinition getGroupGraphics(G group,
+			Set<V> groupElements) {
 		return null;
 	}
 
@@ -66,7 +71,9 @@ public class GraphicsProvider<V, E, G> implements IGraphicsProvider<V, E, G> {
 	}
 
 	@Override
-	public EdgeGraphicDefinition getEdgeGraphics(E edge, V edgeSource, V edgeTarget) {
+	public EdgeGraphicDefinition getEdgeGraphics(E edge,
+			V edgeSource,
+			V edgeTarget) {
 		return new EdgeGraphicDefinition.Builder().setTargetArrow(EdgeGraphicDefinition.ArrowType.SHORT_ARROW)
 				.setLineType(GraphicDefinition.LineType.DASHED).build();
 	}

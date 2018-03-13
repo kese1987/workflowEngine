@@ -31,20 +31,24 @@ public class Grapher implements IGrapher {
 	}
 
 	@Override
-	public void draw(HashMap<String, WorkflowInfo> workflowInfo, String path) {
+	public void draw(HashMap<String, WorkflowInfo> workflowInfo,
+			String path) {
 
 		graphicsProvider.setWorkflowInfo(workflowInfo);
 
-		Builder<String, DefaultEdge, Object> writerBuilder = new YedGmlWriter.Builder<String, DefaultEdge, Object>(
-				graphicsProvider, YedGmlWriter.PrintLabels.PRINT_VERTEX_LABELS,
-				YedGmlWriter.PrintLabels.PRINT_EDGE_LABELS);
+		Builder<String, DefaultEdge, Object> writerBuilder = new YedGmlWriter.Builder<String, DefaultEdge, Object>(graphicsProvider, YedGmlWriter.PrintLabels.PRINT_VERTEX_LABELS, YedGmlWriter.PrintLabels.PRINT_EDGE_LABELS);
 
 		writerBuilder.setEdgeLabelProvider(new Function<DefaultEdge, String>() {
 
 			@Override
 			public String apply(DefaultEdge t) {
 
-				String[] fromTo = t.toString().replace("(", "").replace(")", "").replaceAll("\\s+", " ")
+				String[] fromTo = t.toString().replace(	"(",
+														"")
+						.replace(	")",
+									"")
+						.replaceAll("\\s+",
+									" ")
 						.split("\\s:\\s");
 
 				WorkflowInfo nodeInfoFrom = workflowInfo.get(fromTo[0]);
@@ -71,7 +75,6 @@ public class Grapher implements IGrapher {
 		SimpleGraph<String, DefaultEdge> graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
 
 		for (Map.Entry<String, WorkflowInfo> node : workflowInfo.entrySet()) {
-			System.out.println("vertex:" + node.getKey());
 			graph.addVertex(node.getKey());
 
 		}
@@ -83,7 +86,8 @@ public class Grapher implements IGrapher {
 				String nodeTo = flow.getValue();
 				try {
 					if (StringUtils.isNotBlank(nodeTo)) {
-						graph.addEdge(nodeFrom, nodeTo);
+						graph.addEdge(	nodeFrom,
+										nodeTo);
 					}
 				} catch (Exception e) {
 					System.out.println(e.getMessage() + "from: " + nodeFrom + " to: " + nodeTo);
@@ -101,7 +105,8 @@ public class Grapher implements IGrapher {
 		Writer output;
 		try {
 			output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "utf-8"));
-			writer.export(output, graph);
+			writer.export(	output,
+							graph);
 		} catch (UnsupportedEncodingException | FileNotFoundException e) {
 			e.printStackTrace();
 		}

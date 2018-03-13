@@ -6,9 +6,15 @@ import com.google.common.collect.Maps;
 
 public enum NodeTypeEnum {
 
-	UNDEF(-1, "Undef"), BOOLEAN_GATEWAY_ELEMENT(0, "BooleanGateway"), GATEWAY_ELEMENT(1, "Gateway"), END_ELEMENT(2,
-			"End"), START_ELEMENT(3,
-					"Start"), ERROR_HANDLER_ELEMENT(4, "ErrorHandler"), USER_TASK_ELEMENT(5, "UserTask");
+	UNDEF(-1, "Undef"),
+	BOOLEAN_GATEWAY_ELEMENT(0, "BooleanGateway"),
+	GATEWAY_ELEMENT(1, "Gateway"),
+	END_ELEMENT(2, "End"),
+	START_ELEMENT(3, "Start"),
+	ERROR_HANDLER_ELEMENT(4, "ErrorHandler"),
+	USER_TASK_ELEMENT(5, "UserTask"),
+	FORK_ELEMENT(6, "ForkElement"),
+	JOIN_ELEMENT(7, "JoinElement");
 
 	private static final HashMap<Integer, NodeTypeEnum> fromIntegerValue = Maps.newHashMap();
 	private static final HashMap<String, NodeTypeEnum> fromStringValue = Maps.newHashMap();
