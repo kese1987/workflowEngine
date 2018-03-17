@@ -1,6 +1,6 @@
 package com.shareshipping.utils.workflowEngine;
 
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
